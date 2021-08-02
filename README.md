@@ -1,4 +1,4 @@
-# uniapp-test
+# uniapp-skeleton
 
 ## Project setup
 ```
