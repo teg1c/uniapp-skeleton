@@ -70,24 +70,18 @@ let retryCount = 0;
 function doRequest({
     url, method, params = {}, data = {}, header = {}, onSuccess, onFail
 }) {
-    const cityID = store.getters['city/currentCity'].city_id;
-    const shareCityID = store.getters['city/shareCity'].city_id;
-    params.city_id = cityID;
-    params.share_city_id = shareCityID;
     const token = session.get();
     if (!token) {
         onFail('token is undefined');
         return;
     }
-
     const version = config.VERSION;
-    const scene =  '';
 
     // eslint-disable-next-line dot-notation
     header['Authorization'] = `bearer ${token}`;
     header['App-Version'] = version;
+    header['P'] = config.PLATFORM;
     // eslint-disable-next-line dot-notation
-
 
     const urlObj = new URI(`${config.HOST_URL}${url}`);
     Object.keys(params).forEach(key => {

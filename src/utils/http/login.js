@@ -20,11 +20,10 @@ function doLoginTest(){
     return new Promise((resolve, reject) => {
         const version = config.VERSION;
         const scene =  '';
-
         const header = {
             'Wx-Scene': scene,
             'App-Version': version,
-            Platform: 20
+            'Platform': config.Platform
         };
 
         uni.request({
@@ -67,7 +66,7 @@ function doLogin(code) {
         const header = {
             'Wx-Scene': scene,
             'App-Version': version,
-            Platform: 20
+            'Platform': config.Platform
         };
 
         uni.request({

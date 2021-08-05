@@ -1,5 +1,5 @@
 {
-	"name": "",
+	"name": "全平台应用",
 	"appid": "",
 	"description": "",
 	"versionName": "1.0.0",
@@ -54,7 +54,7 @@
 
 	},
 	"mp-weixin": { /* 微信小程序特有相关 */
-		"appid": "",
+		"appid": "wx015136adbe545972",
 		"setting": {
 			"urlCheck": false
 		},

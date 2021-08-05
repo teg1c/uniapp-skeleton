@@ -19,7 +19,6 @@ export default {
     }
   },
   onLoad() {
-    console.log(this.$store.getters.userInfo)
     this.getHome()
   },
   methods: {
