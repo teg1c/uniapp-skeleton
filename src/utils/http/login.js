@@ -43,7 +43,9 @@ function doLoginTest(){
                         const token = data.data.access_token;
                         session.set(token);
                         // token获取之后再去异步获取用户信息
-                        resolve(response)
+                        store.dispatch('user/getUserInfo')
+                            .then(resolve)
+                            .catch(reject);
                     }
                 } else {
                     reject(response);

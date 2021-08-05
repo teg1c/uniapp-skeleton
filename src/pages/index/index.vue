@@ -19,18 +19,13 @@ export default {
     }
   },
   onLoad() {
-    console.log(this.$store.getters.cityInfo)
-    console.log(this.$store.commit('city/SET_CITY',{city_id:123,name:"test"}))
+    console.log(this.$store.getters.userInfo)
     this.getHome()
-    this.getHomeTest()
   },
   methods: {
     async getHome() {
       const {data} = await api.home.getHome();
       this.test = data;
-    },
-    async getHomeTest() {
-      const {data} = await api.home.getHomeTest();
     }
   }
 }

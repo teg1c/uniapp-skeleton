@@ -3,9 +3,7 @@ import URI from 'urijs';
 import store from '@/store';
 import config from '@/config';
 import session from './session';
-import {
-    createApiSecretSign, createPassword, createSign, createToken, decryptData
-} from './crypto';
+
 import login from './login';
 import {
     SUCCESS, SESSION_TIMEOUT, LOGIN_ERROR, SYSTEM_ERROR
@@ -87,17 +85,9 @@ function doRequest({
 
     // eslint-disable-next-line dot-notation
     header['Authorization'] = `bearer ${token}`;
-    header['token'] = `${token}`;
-    header['Wx-Scene'] = scene;
     header['App-Version'] = version;
     // eslint-disable-next-line dot-notation
-    header['Platform'] = 20;
-    // header['Api-Secret-Sign'] = createApiSecretSign({
-    //     token: createToken(token),
-    //     password,
-    //     sign,
-    //     version
-    // });
+
 
     const urlObj = new URI(`${config.HOST_URL}${url}`);
     Object.keys(params).forEach(key => {
@@ -129,11 +119,11 @@ function doRequest({
                                 if (res.code === 200) {
                                     const newToken = res.data;
                                     session.set(newToken.access_token);
-                                    // store.dispatch('user/getUserInfo').finally(() => {
-                                    //     doRequest({
-                                    //         url, method, params, data, header, onSuccess, onFail
-                                    //     });
-                                    // });
+                                    store.dispatch('user/getUserInfo').finally(() => {
+                                        doRequest({
+                                            url, method, params, data, header, onSuccess, onFail
+                                        });
+                                    });
                                 } else {
                                     onFail(new Error('token刷新失败'));
                                 }
@@ -180,6 +170,7 @@ function doRequest({
 const request = ({
     url, method, params = {}, data = {}, header = {}
 }) => new Promise(resolve => {
+    header["content-type"] = "application/json";
     // debugger;
     const token = session.get();
     const options = {

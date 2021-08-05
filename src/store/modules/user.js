@@ -23,7 +23,7 @@ const mutations = {
 const actions = {
     getUserInfo({ commit }) {
         return new Promise((resolve, reject) => {
-            api.me.getUserInfo()
+            api.user.userInfo()
                 .then(res => {
                     if (res.data) {
                         const { data } = res;
@@ -88,7 +88,7 @@ const actions = {
         return new Promise((resolve, reject) => {
             api.me.decodeUserPhone(params)
                 .then(res => {
-                    if (res.code === 0) {
+                    if (res.code === 200) {
                         session.set(res.data.access_token);
                         dispatch('getUserInfo')
                             .then(data => {
