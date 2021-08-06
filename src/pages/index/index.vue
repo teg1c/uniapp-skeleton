@@ -9,25 +9,25 @@
 </template>
 
 <script>
-import api from '@/api/api';
+import api from "@/api/api";
 
 export default {
   data() {
     return {
-      title: 'Hello',
-      test: ''
-    }
+      title: "Hello",
+      test: "",
+    };
   },
   onLoad() {
-    this.getHome()
+    this.getHome();
   },
   methods: {
     async getHome() {
-      const {data} = await api.home.getHome();
+      const { data } = await api.home.getHome();
       this.test = data;
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style>
