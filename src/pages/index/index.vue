@@ -1,6 +1,5 @@
 <template>
   <view class="content">
-    <image class="logo" src="/static/logo.png"></image>
     <view>
       <text class="title">{{ title }}</text>
       <text class="test">{{ test }}</text>
@@ -10,7 +9,7 @@
 
 <script>
 import api from "@/api/api";
-
+import config from '@/config';
 export default {
   data() {
     return {
@@ -19,6 +18,7 @@ export default {
     };
   },
   onLoad() {
+    console.info(config.PLATFORM )
     this.getHome();
   },
   methods: {

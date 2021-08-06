@@ -16,16 +16,16 @@ const getWxLoginResult = () => new Promise((resolve, reject) => {
     });
 });
 
-function doLoginTest(){
+function doLoginWeb() {
     return new Promise((resolve, reject) => {
         const version = config.VERSION;
-        const scene =  '';
+        const scene = '';
         const header = {
             'Wx-Scene': scene,
             'App-Version': version,
-            'Platform': config.Platform
+            'X-PLATFORM': config.PLATFORM
         };
-
+        console.log('doLoginWeb header', header)
         uni.request({
             url: `${config.HOST_URL}/miniapp/login`,
             method: 'POST',
@@ -61,16 +61,15 @@ function doLoginTest(){
 function doLogin(code) {
     return new Promise((resolve, reject) => {
         const version = config.VERSION;
-        const scene =  '';
+        const scene = '';
 
         const header = {
-            'Wx-Scene': scene,
             'App-Version': version,
-            'Platform': config.Platform
+            'X-PLATFORM': config.PLATFORM
         };
 
         uni.request({
-            url: `${config.HOST_URL}/user/token?city_id=${store.getters['city/currentCity'].city_id}`,
+            url: `${config.HOST_URL}/miniapp/login`,
             method: 'POST',
             header,
             data: {
@@ -79,7 +78,7 @@ function doLogin(code) {
             success(response) {
                 if (response.statusCode === 200 && response.data) {
                     const { data } = response;
-                    if (data.code !== 0) {
+                    if (data.code !== 200) {
                         reject(response);
                     } else {
                         const token = data.data.access_token;
@@ -107,7 +106,16 @@ export default async function login() {
     try {
         // const code = await getWxLoginResult();
         // await doLogin(code);
-        await  doLoginTest();
+        console.log('function login()',config.PLATFORM)
+        if (config.PLATFORM == 'web') {
+            console.log('web 获取token')
+            await doLoginWeb();
+        } else {
+            const code = await getWxLoginResult();
+            console.log('微信 获取token')
+            await doLogin(code);
+        }
+
         retry = false;
     } catch (e) {
         if (!retry) {

@@ -50,17 +50,17 @@ const doRequestWithLogin = (() => {
 
     return (fn) => {
         queue.push(fn);
-        if (lock === false){
+        if (lock === false) {
             lock = true;
             console.log('开始登录')
             login().finally(() => {
-                    console.log('登录完成')
-                    while (queue.length) {
-                        const callback = queue.pop();
-                        callback();
-                    }
-                    lock = false;
-                });
+                console.log('登录完成')
+                while (queue.length) {
+                    const callback = queue.pop();
+                    callback();
+                }
+                lock = false;
+            });
         }
 
     };
@@ -80,14 +80,14 @@ function doRequest({
     // eslint-disable-next-line dot-notation
     header['Authorization'] = `bearer ${token}`;
     header['App-Version'] = version;
-    header['P'] = config.PLATFORM;
+    header['X-PLATFORM'] = config.PLATFORM;
     // eslint-disable-next-line dot-notation
 
     const urlObj = new URI(`${config.HOST_URL}${url}`);
     Object.keys(params).forEach(key => {
         urlObj.setSearch(key, params[key]);
     });
-
+    console.log('doRequest header', header)
     const options = {
         url: urlObj.toString(),
         method,
@@ -96,18 +96,18 @@ function doRequest({
         success(response) {
             if (response.statusCode === 200 && response.data) {
                 let result = response.data;
-
+                //doRequestWithLogin(doRequest.bind(this, options));
+                // 如果是刷新接口返回401 重新登录
+                if (result.code != SUCCESS && options.url.indexOf('/refresh') > -1) {
+                    return doRequestWithLogin(doRequest.bind(this, options));
+                }
                 switch (result.code) {
-                case SUCCESS:
-                    onSuccess(result);
-                    retryCount = 0;
-                    break;
-                case SESSION_TIMEOUT:
-                    // 如果是刷新接口返回401那么就直接结束
-                    if (options.url.indexOf('/refresh') > -1) {
-                        onFail('token刷新失败');
-                    } else {
-                        // eslint-disable-next-line no-use-before-define
+                    case SUCCESS:
+                        onSuccess(result);
+                        retryCount = 0;
+                        break;
+                    case SESSION_TIMEOUT:
+
                         refreshToken()
                             .then(res => {
                                 if (res.code === 200) {
@@ -122,32 +122,31 @@ function doRequest({
                                     onFail(new Error('token刷新失败'));
                                 }
                             });
-                    }
-                    break;
-                case LOGIN_ERROR:
-                    // 如果递归次数超过50次，即刻结束
-                    if (retryCount > 50) {
-                        onFail(new Error('错误请求次数超限'));
-                    } else {
-                        doRequestWithLogin(doRequest.bind(this, {
-                            url, method, params, data, header, onSuccess, onFail
-                        }));
-                    }
-                    break;
-                case SYSTEM_ERROR:
-                    tipModal('服务器开小差了\n稍后再试吧');
-                    onFail(new Error('服务器开小差了\n稍后再试吧'));
-                    break;
-                default:
-                    if (result.code == 400) {
-                        if (result.msg) {
-                            errorModal(result.msg);
+                        break;
+                    case LOGIN_ERROR:
+                        // 如果递归次数超过50次，即刻结束
+                        if (retryCount > 50) {
+                            onFail(new Error('错误请求次数超限'));
+                        } else {
+                            doRequestWithLogin(doRequest.bind(this, {
+                                url, method, params, data, header, onSuccess, onFail
+                            }));
                         }
+                        break;
+                    case SYSTEM_ERROR:
+                        tipModal('服务器开小差了\n稍后再试吧');
+                        onFail(new Error('服务器开小差了\n稍后再试吧'));
+                        break;
+                    default:
+                        if (result.code == BUSINESS_ERROR) {
+                            if (result.msg) {
+                                errorModal(result.msg);
+                            }
 
-                        onSuccess(result);
-                    } else {
-                        onFail(new Error('code is not support'));
-                    }
+                            onSuccess(result);
+                        } else {
+                            onFail(new Error('code is not support'));
+                        }
                 }
             } else {
                 onFail(new Error('response statusCode not equal 200'));
@@ -223,7 +222,7 @@ function deleteRequest(url, data) {
 }
 
 function refreshToken() {
-    return get('/user/refresh');
+    return post('/miniapp/refresh');
 }
 
 export default {

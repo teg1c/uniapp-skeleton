@@ -9,3 +9,6 @@ export const LOGIN_ERROR = 403;
 
 // 系统异常
 export const SYSTEM_ERROR = 500;
+
+// 业务错误
+export const BUSINESS_ERROR = 400;
