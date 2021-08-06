@@ -25,7 +25,6 @@ function doLoginWeb() {
             'App-Version': version,
             'X-PLATFORM': config.PLATFORM
         };
-        console.log('doLoginWeb header', header)
         uni.request({
             url: `${config.HOST_URL}/miniapp/login`,
             method: 'POST',

@@ -87,7 +87,6 @@ function doRequest({
     Object.keys(params).forEach(key => {
         urlObj.setSearch(key, params[key]);
     });
-    console.log('doRequest header', header)
     const options = {
         url: urlObj.toString(),
         method,
